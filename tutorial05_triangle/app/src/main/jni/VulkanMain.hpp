@@ -14,11 +14,12 @@
 #ifndef __VULKANMAIN_HPP__
 #define __VULKANMAIN_HPP__
 
-#include <android_native_app_glue.h>
+#include <android/asset_manager.h>
+#include <android/native_window.h>
 
 // Initialize vulkan device context
 // after return, vulkan is ready to draw
-bool InitVulkan(android_app* app);
+bool InitializeVulkan(AAssetManager *manager, ANativeWindow *window);
 
 // delete vulkan device context when application goes away
 void DeleteVulkan(void);

@@ -89,8 +89,7 @@ struct VulkanRenderInfo {
 };
 VulkanRenderInfo render;
 
-// Android Native App pointer...
-android_app* androidAppCtx = nullptr;
+AAssetManager *asset_manager = nullptr;
 
 /*
  * setImageLayout():
@@ -416,8 +415,8 @@ enum ShaderType { VERTEX_SHADER, FRAGMENT_SHADER };
 VkResult loadShaderFromFile(const char* filePath, VkShaderModule* shaderOut,
                             ShaderType type) {
   // Read the file
-  assert(androidAppCtx);
-  AAsset* file = AAssetManager_open(androidAppCtx->activity->assetManager,
+  assert(asset_manager);
+  AAsset* file = AAssetManager_open(asset_manager,
                                     filePath, AASSET_MODE_BUFFER);
   size_t fileLength = AAsset_getLength(file);
 
@@ -628,11 +627,11 @@ void DeleteGraphicsPipeline(void) {
   vkDestroyPipelineCache(device.device_, gfxPipeline.cache_, nullptr);
   vkDestroyPipelineLayout(device.device_, gfxPipeline.layout_, nullptr);
 }
-// InitVulkan:
+// InitializeVulkan:
 //   Initialize Vulkan Context when android application window is created
 //   upon return, vulkan is ready to draw frames
-bool InitVulkan(android_app* app) {
-  androidAppCtx = app;
+bool InitializeVulkan(AAssetManager *manager, ANativeWindow *window) {
+  asset_manager = manager;
 
   if (!InitVulkan()) {
     LOGW("Vulkan is unavailable, install vulkan and re-start");
@@ -650,7 +649,7 @@ bool InitVulkan(android_app* app) {
   };
 
   // create a device
-  CreateVulkanDevice(app->window, &appInfo);
+  CreateVulkanDevice(window, &appInfo);
 
   CreateSwapChain();
 
